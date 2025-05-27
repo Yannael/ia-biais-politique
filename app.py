@@ -2,6 +2,22 @@ import gradio as gr
 import pandas as pd
 from PIL import Image
 import plotly.graph_objects as go
+import requests
+from io import BytesIO
+
+url = "https://github.com/Yannael/ia-biais-politique/blob/main/plots/political_compass_en.png?raw=true"
+response = requests.get(url)
+img_en = Image.open(BytesIO(response.content))
+
+url = "https://github.com/Yannael/ia-biais-politique/blob/main/plots/political_compass_fr.png?raw=true"
+response = requests.get(url)
+img_fr = Image.open(BytesIO(response.content))
+
+# Télécharger et enregistrer temporairement le GIF animé
+url = "https://github.com/Yannael/ia-biais-politique/blob/main/plots/political_compass_animation.gif?raw=true"
+gif_path = "temp.gif"
+with open(gif_path, "wb") as f:
+    f.write(requests.get(url).content)
 
 # Charger les questions
 questions = pd.read_csv('questions/questions_en_fr.csv')
@@ -71,7 +87,7 @@ def create_column_content(question_id, lang='fr'):
     model_scores = {}
     
     # Définir les familles de modèles et leurs modèles spécifiques
-    models = ["openai_gpt-4o", "deepseek_deepseek-chat-v3-0324", "x-ai_grok-beta", "mistralai_mistral-large-2411"]
+    models = ["x-ai_grok-beta", "openai_gpt-4o", "deepseek_deepseek-chat-v3-0324", "mistralai_mistral-large-2411"]
     
     # Charger les réponses depuis les fichiers CSV
     for model in models:
@@ -173,33 +189,40 @@ with gr.Blocks(theme=gr.themes.Soft(), css=css) as interface:
     gr.Markdown('# entre l\'anglais et le français ?')
     
     gr.Markdown("---")
-    gr.Markdown("## Motivations")
+    gr.Markdown("## Aperçu")
     
     with gr.Row():          
 
         with gr.Column():
-            gr.Markdown('#### Qu\'est-ce que c\'est ?')
             gr.Markdown("""
-Quel est l'avis d'un chatbot tel que Grok (x.AI, Elon Musk) sur une affirmation du type "Toute autorité devrait être mise en question" ?
+🧠 **Les IA pensent-elles différemment selon la langue ?**
 
-Son opinion dépend en fait de la langue dans laquelle est posée la question. 
+Interrogez Grok (x.AI, Elon Musk) sur l'affirmation _« Toute autorité devrait être mise en question »_ :
 
-En français, le chatbot sera plutôt d'accord, justifiant que "qu'il est important de questionner l'autorité pour garantir qu'elle agit dans l'intérêt de tous et pour éviter les abus de pouvoir".
+- En **français** : il **approuve**, au nom de la vigilance démocratique.
+    
+- En **anglais** : il **désapprouve**, invoquant les dangers d’un scepticisme généralisé, notamment envers les secours ou la science.
+    
 
-En anglais, le chatbot sera en désaccord, cette fois-ci en se justifiant par "While questioning authority can lead to critical thinking and necessary change, not all authority should be questioned indiscriminately", citant ensuite comme exemple de systèmes ne devant pas être remis en question les services d'urgences ou le consensus scientifique.
+🔍 Cette interface vous permet d’explorer et comparer les **opinions de plusieurs chatbots** (Grok, ChatGPT, Mistral, DeepSeek) sur **62 questions de société** – et d’observer **comment leurs biais varient selon la langue**.
 
-Vous trouverez sur que je viens de traduire en français le détail des réponses, ainsi que celles obtenus sur 60 autres questions touchant à des valeurs économiques, politiques et culturelles.
+📊 Résultat ? Une tendance commune au **libertarianisme de gauche**, encore plus marquée en français – sauf chez Mistral, de façon surprenante.
 
-L'interface permet aussi de comparer les opinions d'autres chatbots (Mistral, ChatGPT, DeepSeek). 
+Auteur: [Yann-Aël Le Borgne](https://www.linkedin.com/in/yannaelb/)
 
-Les résultats confirment pour l'anglais que les chatbots ont une tendance à être dans le quadrant libertaire-gauche, comme l'ont montrés les études récentes de Liu et al. (Nature  humanities and social sciences communications) et celles de Rozado (lien en commentaires).
+Code source : [GitHub](https://github.com/Yannael/ia-biais-politique)
 
-L'interface permet de montrer aussi que les biais à gauche se renforcent lorsque les questions sont posées en français (sauf pour Mistral, étonnament).
+Inspiré par :
+- [Liu, Y., Panwang, Y. & Gu, C. “Turning right”? An experimental study on the political value shift in large language models. Humanit Soc Sci Commun 12, 179 (2025).](https://www.nature.com/articles/s41599-025-04465-z)
+- [Les travaux de David Rozado](https://davidrozado.substack.com/p/new-results-of-state-of-the-art-llms)
+- [Boussole Politique](https://politicalcompass.org/)
+- [TrackingAI](https://trackingai.io/)
+- [SpeechMap](https://speechmap.ai/)
             """)
 
             
         with gr.Column():
-            img_overview = gr.Image("plots/political_compass_animation.gif", type="filepath", label="Boussole Politique Animée")
+            img_overview = gr.Image(value=gif_path, type="pil", label="Boussole Politique Animée")
             
     # Visualisations de la boussole politique
     gr.Markdown("---")
@@ -211,11 +234,9 @@ Ces deux cartes montrent la boussole politique des modèles.
     with gr.Row():          
 
         with gr.Column():
-            img_en = Image.open("plots/political_compass_en.png")
             compass_plot_en = gr.Image(value=img_en, type="pil", show_label=False)
         
         with gr.Column():
-            img_fr = Image.open("plots/political_compass_fr.png")
             compass_plot_fr = gr.Image(value=img_fr, type="pil", show_label=False)
     
     
@@ -284,24 +305,6 @@ Ces deux cartes montrent la boussole politique des modèles.
             outputs=[dropdown_fr, plot_en, plot_fr, answers_en, answers_fr]
         )
     
-    
-    gr.Markdown("---")
-    gr.Markdown("## À propos")
-    with gr.Row(): 
-
-        gr.Markdown("""
-Fait avec ❤️ par [Yann-Aël Le Borgne](https://www.linkedin.com/in/yannaelb/)
-
-Code source : [GitHub](https://github.com/Yannael/ai-political-bias)
-
-Inspiré par :
-- [Liu, Y., Panwang, Y. & Gu, C. “Turning right”? An experimental study on the political value shift in large language models. Humanit Soc Sci Commun 12, 179 (2025).](https://www.nature.com/articles/s41599-025-04465-z)
-- [Les travaux de David Rozado](https://davidrozado.substack.com/p/new-results-of-state-of-the-art-llms)
-- [Boussole Politique](https://politicalcompass.org/)
-- [TrackingAI](https://trackingai.io/)
-- [SpeechMap](https://speechmap.ai/)
-        """)
-
 
 if __name__ == '__main__':
     interface.launch(share=True)
