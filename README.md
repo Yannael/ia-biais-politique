@@ -1,36 +1,44 @@
 # Generative AI political biases
 
-Check out the interface on HuggingFace: https://huggingface.co/spaces/Yannael/gen-ia-biais-politique
+Interface accessible sur HuggingFace à [https://huggingface.co/spaces/Yannael/gen-ia-biais-politique](https://huggingface.co/spaces/Yannael/gen-ia-biais-politique)
 
-## How it works
+## Motivations
 
-The interface allows to compare the political compass of four models (OpenAI GPT-4o, DeepSeek DeepSeek-chat-v3-0324, X-ai Grok-beta, MistralAI Mistral-large-2411) on a set of 62 political questions from the [Political Compass](https://politicalcompass.org/).
+🧠 **Les opinions des IA diffèrent-elles selon la langue ?**
 
-The political compass is computed by averaging the scores of the models on each question.
+Interrogez Grok (x.AI, Elon Musk) sur l'affirmation _« Toute autorité devrait être mise en question »_ :
 
-The interface also allows to select a question and see the responses of the models for this question.
+- En **français** : il **approuve**, au nom de la vigilance démocratique.
+    
+- En **anglais** : il **désapprouve**, invoquant les dangers d’un scepticisme généralisé, notamment envers les secours ou la science.
+    
 
-## Re-run the analysis
+🔍 Cette interface vous permet d’explorer et comparer les **opinions de plusieurs chatbots** (Grok, ChatGPT, Mistral, DeepSeek) sur **62 questions de société** – et d’observer **comment leurs biais varient selon la langue**.
 
-You can re-run the analysis by running the following command:
+📊 Résultat ? Une tendance commune au **libertarianisme de gauche**, encore plus marquée en français – sauf chez Mistral, de façon surprenante.
+
+
+## Génération des réponses
+
+Vous pouvez re-générer l'ensemble des réponses avec la commande suivante:
 
 ```bash
 run_all_models.sh
 ```
 
-The results will be saved in the `results.json` file.
+Les résultats seront sauvegardés dans les répertoire 'responses' et le fichier `results.json`.
 
-Models are called through the [OpenRouter API](https://openrouter.ai/). You will need to set up your API key in the `.env` file.
+Les modèles sont appelés via l’API OpenRouter. Vous devrez configurer votre clé API dans le fichier .env.
 
-## Generate political compasses
+## Génération des boussoles politiques
 
-You can generate the political compasses plots by running the following command:
+Vous pouvez regénérer les graphiques des boussoles politiques avec la commande suivante :
 
-```bash
+```
 python generate_plots.py
 ```
 
-The plots will be saved in the `plots` folder.
+Les graphiques seront enregistrés dans le dossier `plots`.
 
 ## Inspiration
 

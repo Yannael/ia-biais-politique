@@ -195,7 +195,7 @@ with gr.Blocks(theme=gr.themes.Soft(), css=css) as interface:
 
         with gr.Column():
             gr.Markdown("""
-🧠 **Les IA pensent-elles différemment selon la langue ?**
+🧠 **Les opinions des IA diffèrent-elles selon la langue ?**
 
 Interrogez Grok (x.AI, Elon Musk) sur l'affirmation _« Toute autorité devrait être mise en question »_ :
 
